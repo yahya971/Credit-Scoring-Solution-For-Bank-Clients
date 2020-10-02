@@ -6,3 +6,6 @@ During this project, I was successful in completing these tasks:
 - Collecting additional data about the clients by scrapping their LinkedIn profiles' public information (Jupyter Notebook, Selenium, BeautifulSoup).
 - Creating a script for calculating a client's credit score (Jupyter Notebook).
 - Data visualization and analysis by designing a dashboard using ELK stack (Elasticsearch, logstash, Kibana).
+
+
+For Confidentiality measures, the data used to feed the data warehouse is not provided.
