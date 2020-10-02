@@ -1,0 +1,55 @@
+This file contains the basic steps to setup the credit scoring project.
+
+STEP 0 : make sure to keep track of the data folder path because we will use it to load data for the data warehouse (Talend)
+
+STEP 1 (Data warehouse schema creation) : 
+			-In the folder Database Creation you will find a screenshot of the star schema of the data warehouse
+			 as well as the sql statement to create it
+			-Open pgAdmin 4 and create a database with the name 'Biat_Client_Scorer_DataWarehouse'
+			-Open the query tool and execute the sql statement found in the file 'Data Warehouse Tables.sql'
+
+Step 2 (Data Loading in the data Warehouse):
+			-Open 'Talend Open Studion for data integration and make sure to import the Project 'Biat_stage' found in the Talend folder
+			-Make sure the database connection and the path of the data files are correctly assigned in the talend components
+			-First execute the job 'Biat_Client_Scorer_Data_Warehouse_Dimension_Tables_Loading' and make sure that it executes properly
+			-Second execute the job 'Biat_Client_Scorer_Data_Warehouse_Fact_Table_Loading' and make sure that all the data is properly assigned in the fact table Score_Client
+			-Make sure that the data exists in the appropriate tables by executing a simple select statement with pgAdmin 4
+
+			Note : (In the score tabel 4 rows don't have DATA_ACCOUNT_PK , that is normal because they don't have a bank account)
+
+Step 3 (Data Scrapping and Credit Score Calculation):
+			-Upload the folder Biat Stage found in the folder 'Jupyter Scripts' into your jupyter Notebook 
+			-Make sure to replace the content in config.txt with a dummy LinkedIn account used for scrapping LinkedIn informations
+			-Make sure to replace the content in configOutlook.txt with a dummy Outlook account used for scrapping name and description of the linkedIn account from the email address
+			- Make sure that user and password of your postgresql database is correct when executing an sql query in the jupyter notebooks
+			-Execute the script 'LinkedinScrapping_v_01' first to scrap the linkedIn data and commit it to the data warehouse
+			-Execute the script 'Credit_Scoring_v_0.1' second to calculate the credit score of the scrapped clients and commit it to the data warehouse
+
+			Note:
+				0- Make sure the chrome driver reference matches you chrome navigator reference
+				1- Please read the comments in the scripts for further instructions
+				2- Note that selecting some elements with selenium could fail if the change the 'id', 'xpath', or 'class' depending on the choice of the selection made, so please make the necessary changes. And if all fails , please send me a message at derbeliy97@gmail.com
+
+Step 4 (Elastic Search Logstash data Injection):
+			- Make sure that logstash ,Kibana, and ElasticSearch are properly installed and the bin folders are added to 'PATH' in global environment variables
+			- Make sure you have your java JDK added to the 'PATH' in the global environment variables
+			- Make sure that user and password of your postgresql database match in logstash.conf file
+			- Launch ElasticSearch by executing 'elasticsearch.bat' in a command Line
+			- Find the file logstash.conf in Logstash folder and make sure to add it in the logstash bin folder
+			- add the postgre jar file into logstash-7.4.0\logstash-7.4.0\logstash-core\lib\jars folder
+			- Inject the data in the elasticsearch database by executing 'logstash -f 'path to logstash bin folder'\logstash.conf'
+
+			Note: the data is automatically updated when it detects a change in the timestamp column after scrapping data or that a new client is added, so make sure to keep the logstash command running or run it every time you make a change in the postgresql database
+
+
+					
+Step 5 (Metrics Dashboard Visualization with Kibana):
+			- Launch Kibana by executing 'kibana.bat'
+			- Open kibana on localhost:5601
+			- Go to stack management -> Index Patterns -> Create New Index Pattern -> fill the index pattern 'client_score_data_warehouse' and add it as an index pattern
+			- Go to stack management -> Saved Objects -> Import -> and import the file 'kibana dashboard' found in Kibana folder
+			- To visualize the dashboard go to Kibana -> Dashboard -> and select the newly added dashboard
+
+			Note : Make sure that the date filter in the top right corner is changed to 15 days or more to visualize the data .
+
+
